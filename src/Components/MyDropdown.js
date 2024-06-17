@@ -1,123 +1,134 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
-import FormDataDisplay from "./FormDataDisplay";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { BASE_URL } from "./constant";
+import FormDataDisplay from "./FormDataDisplay";
+import { BASE_URL } from "./constant"; // Assuming constant is imported correctly
 
 function MyDropdown() {
   const [loading, setLoading] = useState(false);
-  const [states, setState] = useState([]);
-  const [district, setDistrict] = useState([]);
+  const [states, setStates] = useState([]);
+  const [districts, setDistricts] = useState([]);
   const [talukas, setTalukas] = useState([]);
   const [villages, setVillages] = useState([]);
-
+  const [gatNos, setGatNos] = useState([]);
   const [selectedState, setSelectedState] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedTaluka, setSelectedTaluka] = useState("");
   const [selectedVillage, setSelectedVillage] = useState("");
-  const [homeNo, setHomeNo] = useState("");
+  const [selectedGatNo, setSelectedGatNo] = useState("");
 
   useEffect(() => {
-    fetchState();
+    fetchStates();
   }, []);
 
   useEffect(() => {
-    fetchdistrictById();
+    if (selectedState) {
+      fetchDistrictsByState();
+    }
   }, [selectedState]);
 
   useEffect(() => {
-    fetchtalukaById();
-  }, [selectedDistrict]); 
+    if (selectedDistrict) {
+      fetchTalukasByDistrict();
+    }
+  }, [selectedDistrict]);
 
   useEffect(() => {
-    fetchvillagesById();
-  }, [selectedTaluka]); 
-  
+    if (selectedTaluka) {
+      fetchVillagesByTaluka();
+    }
+  }, [selectedTaluka]);
 
-  const fetchState = async () => {
+  useEffect(() => {
+    if (selectedVillage) {
+      fetchGatNosByVillage();
+    }
+  }, [selectedVillage]);
+
+  const fetchStates = async () => {
     try {
-      const result = await axios.get(`${BASE_URL}/state`);
-      if (result.status === 200) {
-        console.log(result);
-        setState(result.data.content);
-      } else {
-        console.log("error", result);
-      }
+      const response = await axios.get(`${BASE_URL}/state`);
+      setStates(response.data.content);
     } catch (error) {
-      console.log("error", error);
+      console.error("Error fetching states:", error);
     }
   };
 
-  const fetchdistrictById = async () => {
+  const fetchDistrictsByState = async () => {
     try {
-      const result = await axios.get(
-        
+      const response = await axios.get(
         `${BASE_URL}/district/state/${selectedState}`
       );
-      if (result.status === 200) {
-        console.log(result);
-        setDistrict(result.data);
-      } else {
-        console.log("error", result);
-      }
+      setDistricts(response.data);
     } catch (error) {
-      console.log("error", error);
+      console.error(`Error fetching districts for state ${selectedState}:`, error);
     }
   };
 
-  const fetchtalukaById = async () => {
+  const fetchTalukasByDistrict = async () => {
     try {
-      const result = await axios.get(
+      const response = await axios.get(
         `${BASE_URL}/taluka/district/${selectedDistrict}`
       );
-      if (result.status === 200) {
-        console.log(result);
-        setTalukas(result.data);
-      } else {
-        console.log("error", result);
-      }
+      setTalukas(response.data);
     } catch (error) {
-      console.log("error", error);
+      console.error(`Error fetching talukas for district ${selectedDistrict}:`, error);
     }
   };
 
-  const fetchvillagesById = async () => {
+  const fetchVillagesByTaluka = async () => {
     try {
-      const result = await axios.get(
+      const response = await axios.get(
         `${BASE_URL}/village/taluka/${selectedTaluka}`
       );
-      if (result.status === 200) {
-        console.log(result);
-        setVillages(result.data);
-      } else {
-        console.log("error", result);
-      }
+      setVillages(response.data);
     } catch (error) {
-      console.log("error", error);
+      console.error(`Error fetching villages for taluka ${selectedTaluka}:`, error);
     }
   };
 
-  const handleStateChange = (data) => {
-    setSelectedState(data);
+  const fetchGatNosByVillage = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/plot/village/${selectedVillage}`
+      );
+      setGatNos(response.data);
+    } catch (error) {
+      console.error(`Error fetching gat numbers for village ${selectedVillage}:`, error);
+    }
   };
 
-  const handleDistrictChange = (data) => {
-    setSelectedDistrict(data);
+  const handleStateChange = (event) => {
+    setSelectedState(event.target.value);
+    setSelectedDistrict(""); // Reset district when state changes
+    setSelectedTaluka(""); // Reset taluka when state changes
+    setSelectedVillage(""); // Reset village when state changes
+    setSelectedGatNo(""); // Reset gat no when state changes
   };
-  const handleTalukaChange = (data) => {
-    
-    setSelectedTaluka(data);
+
+  const handleDistrictChange = (event) => {
+    setSelectedDistrict(event.target.value);
+    setSelectedTaluka(""); // Reset taluka when district changes
+    setSelectedVillage(""); // Reset village when district changes
+    setSelectedGatNo(""); // Reset gat no when district changes
   };
+
+  const handleTalukaChange = (event) => {
+    setSelectedTaluka(event.target.value);
+    setSelectedVillage(""); // Reset village when taluka changes
+    setSelectedGatNo(""); // Reset gat no when taluka changes
+  };
+
   const handleVillageChange = (event) => {
-    const village = event.target.value;
-    setSelectedVillage(village);
+    setSelectedVillage(event.target.value);
+    setSelectedGatNo(""); // Reset gat no when village changes
   };
-  const handleHomeNoChange = (event) => {
-    const no = parseInt(event.target.value);
-    setHomeNo(no);
+
+  const handleGatNoChange = (event) => {
+    setSelectedGatNo(event.target.value);
   };
+
   const handleSubmit = () => {
-    // setShowData(true);
+    // Handle form submission logic here
   };
 
   return (
@@ -127,28 +138,23 @@ function MyDropdown() {
           <h2 className="information-heading">Select Your Information</h2>
 
           <div className="d-flex my-4">
-            {/* <label htmlFor="state" className=" dropdown-names my-2 ">
-              States:
-            </label> */}
             <span className="input-group-text" id="inputGroup-sizing-sm">
               State
             </span>
             <select
               id="State"
               value={selectedState}
-              onChange={(e) => handleStateChange(e.target.value)}
+              onChange={handleStateChange}
               className="form-select"
               aria-label="Default select example"
-              disabled={!states}
+              disabled={loading || states.length === 0}
             >
               <option value="">Select State</option>
-
-              {states &&
-                states.map((state, index) => (
-                  <option key={index} value={state.id}>
-                    {state.name}
-                  </option>
-                ))}
+              {states.map((state) => (
+                <option key={state.id} value={state.id}>
+                  {state.name}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -159,102 +165,94 @@ function MyDropdown() {
             <select
               id="District"
               value={selectedDistrict}
-              onChange={(e) => handleDistrictChange(e.target.value)}
-              className="form-select "
+              onChange={handleDistrictChange}
+              className="form-select"
               aria-label="Default select example"
-              disabled={district.length === 0}
+              disabled={loading || districts.length === 0}
             >
               <option value="">Select District</option>
-              {district &&
-                district.map((district, index) => (
-                  <option key={index} value={district.id}>
-                    {district.name}
-                  </option>
-                ))}
+              {districts.map((district) => (
+                <option key={district.id} value={district.id}>
+                  {district.name}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* Talukas */}
-
           <div className="d-flex my-4">
-            {/* <label htmlFor="state" className=" dropdown-names my-2 ">
-              Taluka:
-            </label> */}
             <span className="input-group-text" id="inputGroup-sizing-sm">
               Taluka
             </span>
             <select
               id="Taluka"
               value={selectedTaluka}
-              onChange={(e) => handleTalukaChange(e.target.value)}
-              className="form-select "
+              onChange={handleTalukaChange}
+              className="form-select"
               aria-label="Default select example"
-              disabled={talukas.length === 0}
+              disabled={loading || talukas.length === 0}
             >
               <option value="">Select Taluka</option>
-              {talukas &&
-                talukas.map((taluka, index) => (
-                  <option key={index} value={taluka.id}>
-                    {taluka.name}
-                  </option>
-                ))}
+              {talukas.map((taluka) => (
+                <option key={taluka.id} value={taluka.id}>
+                  {taluka.name}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* villages */}
-
           <div className="d-flex my-4">
-            {/* <label htmlFor="state" className=" dropdown-names my-2 ">
-              Vilage:
-            </label> */}
             <span className="input-group-text" id="inputGroup-sizing-sm">
               Village
             </span>
             <select
               id="Village"
               value={selectedVillage}
-              onChange={(e) =>handleVillageChange(e.target.value)}
-            
-              className="form-select "
+              onChange={handleVillageChange}
+              className="form-select"
               aria-label="Default select example"
-              disabled={villages.length === 0}
+              disabled={loading || villages.length === 0}
             >
               <option value="">Select Village</option>
-              {villages &&
-              villages.map((village, index) => (
-                <option key={index} value={village.id}>
+              {villages.map((village) => (
+                <option key={village.id} value={village.id}>
                   {village.name}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="input-group input-group-sm mb-3">
+          <div className="d-flex my-4">
             <span className="input-group-text" id="inputGroup-sizing-sm">
               Gat No.
             </span>
-            <input
-              type="number"
-              className="form-control"
-              aria-label="Sizing example input"
-              aria-describedby="inputGroup-sizing-sm"
-              placeholder="0"
-              value={homeNo}
-              onChange={handleHomeNoChange}
-            />
+            <select
+              id="GatNo"
+              value={selectedGatNo}
+              onChange={handleGatNoChange}
+              className="form-select"
+              aria-label="Default select example"
+              disabled={loading || gatNos.length === 0}
+            >
+              <option value="">Select Gat No</option>
+              {gatNos.map((gatNo) => (
+                <option key={gatNo.id} value={gatNo.id}>
+                  {gatNo.plotNumber}, {gatNo.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="btn-container">
             <button
-              type="button  "
+              type="button"
               className="btn btn-primary my-2 submitBtn"
               onClick={handleSubmit}
             >
               Submit
             </button>
             <button
-              type="button  "
-              className="btn btn-dark btn-size get-direction-btn "
+              type="button"
+              className="btn btn-dark btn-size get-direction-btn"
               onClick={handleSubmit}
             >
               Get Direction
@@ -262,15 +260,6 @@ function MyDropdown() {
           </div>
         </div>
 
-        {/* {showData && (
-          <FormDataDisplay
-            selectedState={selectedState}
-            selectedDistrict={selectedDistrict}
-            selectedTaluka={selectedTaluka}
-            selectedVillage={selectedVillage}
-            homeNo={homeNo}
-          />
-        )} */}
       </div>
     </div>
   );

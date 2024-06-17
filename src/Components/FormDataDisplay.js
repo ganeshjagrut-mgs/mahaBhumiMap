@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FormDataDisplay = ({ selectedState, selectedDistrict, selectedTaluka, selectedVillage,homeNo }) => {
+const FormDataDisplay = ({ selectedState, selectedDistrict, selectedTaluka, selectedVillage,selectedGatNo }) => {
   return (
     <div>
       
@@ -8,7 +8,7 @@ const FormDataDisplay = ({ selectedState, selectedDistrict, selectedTaluka, sele
       <p>District: {selectedDistrict}</p>
       <p>Taluka: {selectedTaluka}</p>
       <p>Village: {selectedVillage}</p> 
-      <p>Gat No:{homeNo}</p>
+      <p>Gat No:{selectedGatNo}</p>
     </div>
   );
 };

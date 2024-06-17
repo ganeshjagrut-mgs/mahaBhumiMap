@@ -1,0 +1,108 @@
+.container2 {
+  background-color: var(--backgroundColor);
+  color: var(--textColor);
+  border: 0.5px solid var(--borderColor) ;
+  transition: all 0.5s ease-in-out;
+}
+
+.container{
+  background-color: var(--backgroundColor);
+}
+
+::-webkit-scrollbar {
+  width: 0;
+}
+.rowText {
+  color: var(--textColor) !important;
+  background-color: var(--backgroundColor) !important;
+}
+
+.rowText:hover {
+  color: var(--hoverTextColor) !important;
+  background-color: var(--hoverBackgroundColor) !important;
+}
+
+.button {
+  background-color: var(--primaryColor);
+  color: var(--textColor);
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.navActive{
+  background-color: var(--secondaryColor);
+}
+.button:hover {
+  background-color: var(--secondaryColor);
+  color: var(--textColor);
+  padding: 8px;
+  border-radius: 8px;
+}
+.dynamicNavLinks{
+  color: var(--textColor);
+  display: flex;
+  align-items: center;
+}
+.dynamicNavLinks:hover{
+  color: var(--primaryColor);
+  
+}
+
+
+
+.editButton {
+color: #008000 !important;
+}
+
+.editButton:hover {
+color:  #00b300;
+}
+
+
+.deleteButton {
+  color: #ff0000 !important;
+}
+
+.deleteButton:hover {
+color: #ff3333 !important;
+}
+.statusButton{
+  color: #1a8fd8 !important;
+}
+.statusButton:hover{
+  color: #1c8ee5 !important;
+}
+
+
+.viewButton {
+color: #ff9933ff !important;
+}
+
+.viewButton:hover {
+ color:#ff9933ff !important;
+}
+
+
+.addButton {
+  background-color: #1c8ee5;
+  color: var(--textColor) !important;
+}
+
+.addButton:hover {
+  background-color: #1a8fd8;
+  color: var(--textColor) !important;
+}
+
+
+@font-face {
+  font-family: 'Arturo';
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* ./styles.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

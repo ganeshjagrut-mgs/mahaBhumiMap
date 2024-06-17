@@ -53,3 +53,8 @@ background-color: azure;
   margin-right:20px ;
   margin-left: 20px;
 } */
+
+/* ./styles.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
