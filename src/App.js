@@ -1,22 +1,13 @@
-// import {userState} from react
+import React from "react";
+import Layout from "./components/layout";
 
-import "./App.css";
-import './index.css';
-// import Location from "./Components/Location";
-
-// import MyDropdown from "./Components/MyDropdown";
-import Layout from "./Components/layout";
-import { BrowserRouter as Router } from 'react-router-dom';
-
-function App() {
+const App = () => {
   return (
-    <>
-      <Router>
-    <Layout />
-  </Router>,
-    </>
+    <div>
+    
+      <Layout />
+    </div>
   );
-}
+};
 
 export default App;
-

@@ -1,300 +1,308 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import {FaCentercode,FaRegAddressCard, FaSignOutAlt, FaUsers, FaUserTie } from 'react-icons/fa';
-import {MdHome,MdIncompleteCircle } from "react-icons/md";
-import styles from '../styleSheet/styles.module.css'
-import { SiCodersrank } from "react-icons/si";
-import { TbReportSearch } from "react-icons/tb";
-import { PiCertificateLight } from "react-icons/pi";
-import { FcProcess } from "react-icons/fc";
+import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import Button from "@mui/material/Button";
 import axios from "axios";
 import { BASE_URL } from "../constant";
+import { Autocomplete, TextField } from "@mui/material";
 
-const SideBar = ({ isOpen }) => {
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const location = useLocation();
-    const navigate= useNavigate();
-    const handleClick=()=>{
-        navigate("/")
+const SideBar = (props) => {
+  const [states, setStates] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [talukas, setTalukas] = useState([]);
+  const [villages, setVillages] = useState([]);
+  const [gatNos, setGatNos] = useState([]);
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedTaluka, setSelectedTaluka] = useState("");
+  const [selectedVillage, setSelectedVillage] = useState("");
+  const [selectedGatNo, setSelectedGatNo] = useState(null);
+
+  useEffect(() => {
+    fetchStates();
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    if (selectedState) {
+      fetchDistrictsByState();
     }
-    const [loading, setLoading] = useState(false);
-    const [states, setStates] = useState([]);
-    const [districts, setDistricts] = useState([]);
-    const [talukas, setTalukas] = useState([]);
-    const [villages, setVillages] = useState([]);
-    const [gatNos, setGatNos] = useState([]);
-    const [selectedState, setSelectedState] = useState("");
-    const [selectedDistrict, setSelectedDistrict] = useState("");
-    const [selectedTaluka, setSelectedTaluka] = useState("");
-    const [selectedVillage, setSelectedVillage] = useState("");
-    const [selectedGatNo, setSelectedGatNo] = useState("");
-  
-    useEffect(() => {
-      fetchStates();
-    }, []);
-  
-    useEffect(() => {
-      if (selectedState) {
-        fetchDistrictsByState();
-      }
-    }, [selectedState]);
-  
-    useEffect(() => {
-      if (selectedDistrict) {
-        fetchTalukasByDistrict();
-      }
-    }, [selectedDistrict]);
-  
-    useEffect(() => {
-      if (selectedTaluka) {
-        fetchVillagesByTaluka();
-      }
-    }, [selectedTaluka]);
-  
-    useEffect(() => {
-      if (selectedVillage) {
-        fetchGatNosByVillage();
-      }
-    }, [selectedVillage]);
-  
-    const fetchStates = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/state`);
-        setStates(response.data.content);
-      } catch (error) {
-        console.error("Error fetching states:", error);
-      }
-    };
-  
-    const fetchDistrictsByState = async () => {
-      try {
-        const response = await axios.get(
-          `${BASE_URL}/district/state/${selectedState}`
-        );
-        setDistricts(response.data);
-      } catch (error) {
-        console.error(`Error fetching districts for state ${selectedState}:`, error);
-      }
-    };
-  
-    const fetchTalukasByDistrict = async () => {
-      try {
-        const response = await axios.get(
-          `${BASE_URL}/taluka/district/${selectedDistrict}`
-        );
-        setTalukas(response.data);
-      } catch (error) {
-        console.error(`Error fetching talukas for district ${selectedDistrict}:`, error);
-      }
-    };
-  
-    const fetchVillagesByTaluka = async () => {
-      try {
-        const response = await axios.get(
-          `${BASE_URL}/village/taluka/${selectedTaluka}`
-        );
-        setVillages(response.data);
-      } catch (error) {
-        console.error(`Error fetching villages for taluka ${selectedTaluka}:`, error);
-      }
-    };
-  
-    const fetchGatNosByVillage = async () => {
-      try {
-        const response = await axios.get(
-          `${BASE_URL}/plot/village/${selectedVillage}`
-        );
-        setGatNos(response.data);
-      } catch (error) {
-        console.error(`Error fetching gat numbers for village ${selectedVillage}:`, error);
-      }
-    };
-  
-    const handleStateChange = (event) => {
-      setSelectedState(event.target.value);
-      setSelectedDistrict(""); // Reset district when state changes
-      setSelectedTaluka(""); // Reset taluka when state changes
-      setSelectedVillage(""); // Reset village when state changes
-      setSelectedGatNo(""); // Reset gat no when state changes
-    };
-  
-    const handleDistrictChange = (event) => {
-      setSelectedDistrict(event.target.value);
-      setSelectedTaluka(""); // Reset taluka when district changes
-      setSelectedVillage(""); // Reset village when district changes
-      setSelectedGatNo(""); // Reset gat no when district changes
-    };
-  
-    const handleTalukaChange = (event) => {
-      setSelectedTaluka(event.target.value);
-      setSelectedVillage(""); // Reset village when taluka changes
-      setSelectedGatNo(""); // Reset gat no when taluka changes
-    };
-  
-    const handleVillageChange = (event) => {
-      setSelectedVillage(event.target.value);
-      setSelectedGatNo(""); // Reset gat no when village changes
-    };
-  
-    const handleGatNoChange = (event) => {
-      setSelectedGatNo(event.target.value);
-    };
-  
-    const handleSubmit = () => {
-      // Handle form submission logic here
-    };
-  
-    // const handleLogout = () => {
-    //     logout();
-    // };
+    // eslint-disable-next-line
+  }, [selectedState]);
 
-    const renderNavLink = (to, Icon, text) => {
-        return (
-            <NavLink
-                exact
-                to={to}
-                className={`flex items-center ${isOpen ? 'justify-start pl-2' : 'justify-center'
-                    } text-sm sm:text-lg py-2 px-1  rounded-md transition-colors  ${location.pathname === to || location.pathname.match(to) ? `${styles.navActive}` : ` ${styles.button}`
-                    }`}
-            >
-                <Icon className="text-xl" />
-                <span className={`ml-2 ${isOpen ? '' : 'hidden'}`}>{text}</span>
-            </NavLink>
-        );
-    };
+  useEffect(() => {
+    if (selectedDistrict) {
+      fetchTalukasByDistrict();
+    }
+    // eslint-disable-next-line
+  }, [selectedDistrict]);
 
-    return (
-        <aside className={` ${styles.container2} h-full overflow-y-scroll ${isOpen ? 'w-64 px-4' : 'w-16 p-4'}`}>
-           
-            <hr className='border-blue-500' />
-            <nav>
+  useEffect(() => {
+    if (selectedTaluka) {
+      fetchVillagesByTaluka();
+    }
+    // eslint-disable-next-line
+  }, [selectedTaluka]);
 
+  useEffect(() => {
+    if (selectedVillage) {
+      fetchGatNosByVillage();
+    }
+    // eslint-disable-next-line
+  }, [selectedVillage]);
 
+  const fetchStates = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/state`);
+      setStates(response.data.content);
+    } catch (error) {
+      console.error("Error fetching states:", error);
+    }
+  };
 
-            <div className="d-flex my-4">
-            <span className="input-group-text" id="inputGroup-sizing-sm">
-              State
-            </span>
-            <select
+  const fetchDistrictsByState = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/district/state/${selectedState}`
+      );
+      setDistricts(response.data);
+    } catch (error) {
+      console.error(
+        `Error fetching districts for state ${selectedState}:`,
+        error
+      );
+    }
+  };
+
+  const fetchTalukasByDistrict = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/taluka/district/${selectedDistrict}`
+      );
+      setTalukas(response.data);
+    } catch (error) {
+      console.error(
+        `Error fetching talukas for district ${selectedDistrict}:`,
+        error
+      );
+    }
+  };
+
+  const fetchVillagesByTaluka = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/village/taluka/${selectedTaluka}`
+      );
+      setVillages(response.data);
+    } catch (error) {
+      console.error(
+        `Error fetching villages for taluka ${selectedTaluka}:`,
+        error
+      );
+    }
+  };
+
+  const fetchGatNosByVillage = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/plot/village/${selectedVillage}`
+      );
+      setGatNos(response.data);
+    } catch (error) {
+      console.error(
+        `Error fetching gat numbers for village ${selectedVillage}:`,
+        error
+      );
+    }
+  };
+
+  const handleStateChange = (data) => {
+    setSelectedState(data);
+    setDistricts([]);
+    setTalukas([]);
+    setVillages([]);
+    setGatNos([]);
+    setSelectedDistrict("");
+    setSelectedTaluka("");
+    setSelectedVillage("");
+    setSelectedGatNo(null);
+  };
+
+  const handleDistrictChange = (data) => {
+    setSelectedDistrict(data);
+    setTalukas([]);
+    setVillages([]);
+    setGatNos([]);
+    setSelectedTaluka("");
+    setSelectedVillage("");
+    setSelectedGatNo(null);
+  };
+
+  const handleTalukaChange = (data) => {
+    setSelectedTaluka(data);
+    setVillages([]);
+    setGatNos([]);
+    setSelectedVillage("");
+    setSelectedGatNo(null);
+  };
+
+  const handleVillageChange = (data) => {
+    setSelectedVillage(data);
+    setGatNos([]);
+    setSelectedGatNo(null);
+  };
+
+  const handleGatNoChange = (data) => {
+    setSelectedGatNo(data);
+  };
+
+  const handleSubmit = () => {
+    if (
+      selectedState &&
+      selectedDistrict &&
+      selectedTaluka &&
+      selectedVillage &&
+      selectedGatNo
+    ) {
+      props.onSubmit(selectedGatNo);
+    }
+  };
+
+  return (
+    <aside className="w-80 p-4 mt-5">
+      <nav>
+        <Box sx={{ minWidth: 120 }}>
+          <FormControl fullWidth disabled={states.length === 0}>
+            <InputLabel id="state-label">State</InputLabel>
+            <Select
+              labelId="state-label"
               id="State"
               value={selectedState}
-              onChange={handleStateChange}
-              className="form-select"
-              aria-label="Default select example"
-              disabled={loading || states.length === 0}
+              label="State"
+              onChange={(e) => handleStateChange(e.target.value)}
             >
-              <option value="">Select State</option>
+              <MenuItem value="">
+                <em>Select State</em>
+              </MenuItem>
               {states.map((state) => (
-                <option key={state.id} value={state.id}>
+                <MenuItem key={state.id} value={state.id}>
                   {state.name}
-                </option>
+                </MenuItem>
               ))}
-            </select>
-          </div>
-
-          <div className="d-flex my-4">
-            <span className="input-group-text" id="inputGroup-sizing-sm">
-              Districts
-            </span>
-            <select
+            </Select>
+          </FormControl>
+        </Box>
+        <Box sx={{ minWidth: 120 }} className="mt-3">
+          <FormControl fullWidth disabled={districts.length === 0}>
+            <InputLabel id="district-label">Districts</InputLabel>
+            <Select
+              labelId="district-label"
               id="District"
+              label="District"
               value={selectedDistrict}
-              onChange={handleDistrictChange}
-              className="form-select"
-              aria-label="Default select example"
-              disabled={loading || districts.length === 0}
+              onChange={(e) => handleDistrictChange(e.target.value)}
             >
-              <option value="">Select District</option>
+              <MenuItem value="">
+                <em>Select District</em>
+              </MenuItem>
               {districts.map((district) => (
-                <option key={district.id} value={district.id}>
+                <MenuItem key={district.id} value={district.id}>
                   {district.name}
-                </option>
+                </MenuItem>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormControl>
+        </Box>
 
-          <div className="d-flex my-4">
-            <span className="input-group-text" id="inputGroup-sizing-sm">
-              Taluka
-            </span>
-            <select
+        <Box sx={{ minWidth: 120 }} className="mt-3">
+          <FormControl fullWidth disabled={talukas.length === 0}>
+            <InputLabel id="taluka-label">Taluka</InputLabel>
+            <Select
+              labelId="taluka-label"
               id="Taluka"
+              label="Taluka"
               value={selectedTaluka}
-              onChange={handleTalukaChange}
-              className="form-select"
-              aria-label="Default select example"
-              disabled={loading || talukas.length === 0}
+              onChange={(e) => handleTalukaChange(e.target.value)}
             >
-              <option value="">Select Taluka</option>
+              <MenuItem value="">
+                <em>Select Taluka</em>
+              </MenuItem>
               {talukas.map((taluka) => (
-                <option key={taluka.id} value={taluka.id}>
+                <MenuItem key={taluka.id} value={taluka.id}>
                   {taluka.name}
-                </option>
+                </MenuItem>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormControl>
+        </Box>
 
-          <div className="d-flex my-4">
-            <span className="input-group-text" id="inputGroup-sizing-sm">
-              Village
-            </span>
-            <select
+        <Box sx={{ minWidth: 120 }} className="mt-3">
+          <FormControl fullWidth disabled={villages.length === 0}>
+            <InputLabel id="village-label">Village</InputLabel>
+            <Select
+              labelId="village-label"
               id="Village"
+              label="Village"
               value={selectedVillage}
-              onChange={handleVillageChange}
-              className="form-select"
-              aria-label="Default select example"
-              disabled={loading || villages.length === 0}
+              onChange={(e) => handleVillageChange(e.target.value)}
             >
-              <option value="">Select Village</option>
+              <MenuItem value="">
+                <em>Select Village</em>
+              </MenuItem>
               {villages.map((village) => (
-                <option key={village.id} value={village.id}>
+                <MenuItem key={village.id} value={village.id}>
                   {village.name}
-                </option>
+                </MenuItem>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormControl>
+        </Box>
 
-          <div className="d-flex my-4">
-            <span className="input-group-text" id="inputGroup-sizing-sm">
-              Gat No.
-            </span>
-            <select
-              id="GatNo"
-              value={selectedGatNo}
-              onChange={handleGatNoChange}
-              className="form-select"
-              aria-label="Default select example"
-              disabled={loading || gatNos.length === 0}
-            >
-              <option value="">Select Gat No</option>
-              {gatNos.map((gatNo) => (
-                <option key={gatNo.id} value={gatNo.id}>
-                  {gatNo.plotNumber}, {gatNo.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        <Box sx={{ minWidth: 120 }} className="mt-3">
+          <Autocomplete
+            id="GatNo"
+            options={gatNos ? gatNos : []}
+            getOptionLabel={(option) => option.plotNumber}
+            value={gatNos.find((gatNo) => gatNo.plotNumber === selectedGatNo) || null}
+            onChange={(event, newValue) =>
+              handleGatNoChange(newValue ? newValue.plotNumber: null)
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Gat No."
+                variant="outlined"
+                disabled={gatNos.length === 0}
+              />
+            )}
+          />
+        </Box>
 
-          <div className="btn-container">
-            <button
-              type="button"
-              className="btn btn-primary my-2 submitBtn"
-              onClick={handleSubmit}
-            >
-              Submit
-            </button>
-            <button
-              type="button"
-              className="btn btn-dark btn-size get-direction-btn"
-              onClick={handleSubmit}
-            >
-              Get Direction
-            </button>
-          </div>
-            </nav>
-        </aside>
-    );
+        <div className="flex flex-col gap-2 justify-between mt-2 p-2">
+          <Button
+            variant="contained"
+            color="success"
+            className="p-1 w-full h-10"
+            // disabled={!!selectedGatNo}
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
+          <Button
+            variant="contained"
+            // disabled={!!selectedGatNo}
+            className="p-1 w-full h-10"
+            onClick={handleSubmit}
+          >
+            Get Direction
+          </Button>
+        </div>
+      </nav>
+    </aside>
+  );
 };
 
 export default SideBar;

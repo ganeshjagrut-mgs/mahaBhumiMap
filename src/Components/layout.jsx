@@ -1,31 +1,33 @@
-import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import Header from './headers/Headers';
-import Sidebar from './sidebar/Sidebar';
-
+import React from "react";
+import Sidebar from "./sidebar/Sidebar";
+import Main from "./Main";
+import axios from "axios";
+import { BASE_URL } from "./constant";
 
 function Layout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const [data, setData] = React.useState(null);
+  const onSubmit=async(data)=>{
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/plot/plotNumber/${data}`
+      );
+      setData(response.data)
+    } catch (error) {
+      console.error(
+        `Error fetching talukas for district :`,
+        error
+      );
+    }
+  }
   return (
-    <div className=" h-screen  ">
-      <div className="flex h-full w-full">
-        <div className="ml- ">
-          <Sidebar isOpen={sidebarOpen} />
-        </div>
-        <div className={`flex-1 justify-center items-center  w-full  max-h-screen overflow-scroll `}>
-            {/* <Header onSidebarToggle={toggleSidebar} isOpen={sidebarOpen} /> */}
-          <div>
-            <div className=" p-2">
-              <Outlet />
-            </div>
-          </div>
-        </div>
+    <div className="flex h-full w-full bg-gray-100">
+      <div className="bg-white p-2 ">
+        <Sidebar onSubmit={onSubmit} />
+      </div>
+      <div className="px-3 w-full">
+        <Main data={data}></Main>
       </div>
     </div>
-  )
+  );
 }
 export default Layout;
